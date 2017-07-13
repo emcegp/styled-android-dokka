@@ -1,3 +1,5 @@
+package com.gurunars.dokka
+
 import org.gradle.api.Plugin
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.Project
