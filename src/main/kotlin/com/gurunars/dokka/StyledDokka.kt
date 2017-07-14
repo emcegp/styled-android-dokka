@@ -1,3 +1,5 @@
+package com.gurunars.dokka
+
 import org.gradle.api.Plugin
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.Project
@@ -118,7 +120,7 @@ private fun formatBreadCrumbs(moduleName: String, doc: Document) {
         })
         tag.appendText(" / ")
         tag.appendChild(Element(Tag.valueOf("a"), "", Attributes().apply {
-            put("href", "/" + moduleName + "/alltypes/")
+            put("href", "/$moduleName/alltypes/")
         }).apply {
             appendText("All Types")
         })
