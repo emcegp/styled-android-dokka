@@ -105,7 +105,7 @@ private fun formatBreadCrumbs(moduleName: String, doc: Document) {
     tag.appendChild(Element(Tag.valueOf("a"), "", Attributes().apply {
         put("href", "/")
     }).apply {
-        appendText("root")
+        appendText("index")
     })
 
     if (doc.body().select(":root > br").isEmpty()) { // All types
