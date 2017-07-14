@@ -187,7 +187,7 @@ internal fun beautify(project: Project, modules: Collection<Project>) {
     val styles = File("$root/html-docs/style.css")
     styles.deleteRecursively()
     styles.writeText(
-        ParamParseStateMachine::class.java.getResourceAsStream("style.css").readTextAndClose()
+        ParamParseStateMachine::class.java.getResourceAsStream("/style.css").readTextAndClose()
     )
 
     modules.forEach {
