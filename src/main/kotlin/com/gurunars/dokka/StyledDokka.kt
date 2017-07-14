@@ -1,14 +1,13 @@
-package com.gurunars.dokka
-
 import org.gradle.api.Plugin
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.Project
+import org.jetbrains.dokka.ExternalDocumentationLinkImpl
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jsoup.Jsoup
 import org.jsoup.nodes.*
 import org.jsoup.parser.Tag
 import java.io.File
-import java.io.InputStream
-import java.nio.charset.Charset
+import java.net.URL
 
 
 private val dimRegexp = Regex("""^\d+x\d+$""")
@@ -88,11 +87,11 @@ private fun beautifyParameters(doc: Document) {
 private fun orderAllTypes(doc: Document) {
     doc.body().select("table").first()?.apply {
         insertChildren(0,
-            select("tr").sortedWith(
-                compareBy<Element> {
-                    it.select("a").first().text()
-                }
-            )
+                select("tr").sortedWith(
+                        compareBy<Element> {
+                            it.select("a").first().text()
+                        }
+                )
         )
     }
 }
@@ -113,13 +112,13 @@ private fun formatBreadCrumbs(moduleName: String, doc: Document) {
     if (doc.body().select(":root > br").isEmpty()) { // All types
         tag.appendText(" / ")
         tag.appendChild(Element(Tag.valueOf("a"), "", Attributes().apply {
-            put("href", "/$moduleName")
+            put("href", "/" + moduleName)
         }).apply {
             appendText(moduleName)
         })
         tag.appendText(" / ")
         tag.appendChild(Element(Tag.valueOf("a"), "", Attributes().apply {
-            put("href", "/$moduleName/alltypes/")
+            put("href", "/" + moduleName + "/alltypes/")
         }).apply {
             appendText("All Types")
         })
@@ -167,7 +166,6 @@ private fun beautifyHtml(moduleName: String, file: File) {
 }
 
 
-
 private fun copy(from: String, to: String) {
     val source = File(from)
     val target = File(to)
@@ -179,26 +177,15 @@ private fun copy(from: String, to: String) {
 }
 
 
-private fun InputStream.readTextAndClose(charset: Charset = Charsets.UTF_8): String {
-    return this.bufferedReader(charset).use { it.readText() }
-}
-
-
 fun beautify(project: Project, modules: Collection<Project>) {
-    val root = project.projectDir.absolutePath
-
-    val styles = File("$root/html-docs/style.css")
-    styles.deleteRecursively()
-    styles.writeText(
-        ParamParseStateMachine::class.java.getResourceAsStream("style.css").readTextAndClose()
-    )
+    copy("buildSrc/style.css", "html-docs/style.css")
 
     modules.forEach {
         val module = it
 
-        copy("${module.name}/static", "$root/html-docs/${module.name}/static")
+        copy("${module.name}/static", "html-docs/${module.name}/static")
 
-        File("$root/html-docs/${module.name}").walk().forEach {
+        File("html-docs/${module.name}").walk().forEach {
             if (it.isFile && it.name.endsWith(".html")) {
                 beautifyHtml(module.name, it)
             }
@@ -224,7 +211,7 @@ fun beautify(project: Project, modules: Collection<Project>) {
         """
     }
 
-    val indexFile = File("$root/html-docs/index.html")
+    val indexFile = File("html-docs/index.html")
     indexFile.writeText("""
     <html>
         <head>
@@ -245,7 +232,7 @@ fun beautify(project: Project, modules: Collection<Project>) {
 
 
 class StyledDokka : Plugin<Project> {
-    
+
     override fun apply(project: Project) {
         project.gradle.projectsEvaluated {
             project.task("dokka").apply {
@@ -256,8 +243,24 @@ class StyledDokka : Plugin<Project> {
                     it.plugins.findPlugin("com.android.library") != null
                 }
 
+                modules.forEach {
+                    it.tasks.replace("dokka", DokkaTask::class.java).apply {
+                        moduleName=it.name
+                        sourceDirs = it.files("src/main/kotlin")
+                        outputFormat = "html"
+                        outputDirectory = "html-docs"
+                        includes = listOf("README.md")
+                        externalDocumentationLinks = mutableListOf(
+                                ExternalDocumentationLinkImpl(
+                                        url= URL("https://developer.android.com/reference/"),
+                                        packageListUrl= URL("https://developer.android.com/reference/package-list")
+                                )
+                        )
+                    }
+                }
+
                 setMustRunAfter(
-                    modules.map { it.getTasksByName("dokka", true) }.flatten()
+                        modules.map { it.getTasksByName("dokka", true) }.flatten()
                 )
 
                 doLast { beautify(project, modules) }
