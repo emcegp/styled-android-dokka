@@ -1,15 +1,12 @@
 package com.gurunars.dokka
 
-import org.gradle.api.Plugin
-import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.Project
-import org.jetbrains.dokka.ExternalDocumentationLinkImpl
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jsoup.Jsoup
 import org.jsoup.nodes.*
 import org.jsoup.parser.Tag
 import java.io.File
-import java.net.URL
+import java.io.InputStream
+import java.nio.charset.Charset
 
 
 private val dimRegexp = Regex("""^\d+x\d+$""")
@@ -179,15 +176,26 @@ private fun copy(from: String, to: String) {
 }
 
 
+private fun InputStream.readTextAndClose(charset: Charset = Charsets.UTF_8): String {
+    return this.bufferedReader(charset).use { it.readText() }
+}
+
+
 internal fun beautify(project: Project, modules: Collection<Project>) {
-    copy("buildSrc/style.css", "html-docs/style.css")
+    val root = project.projectDir.absolutePath
+
+    val styles = File("$root/html-docs/style.css")
+    styles.deleteRecursively()
+    styles.writeText(
+        ParamParseStateMachine::class.java.getResourceAsStream("style.css").readTextAndClose()
+    )
 
     modules.forEach {
         val module = it
 
-        copy("${module.name}/static", "html-docs/${module.name}/static")
+        copy("${module.name}/static", "$root/html-docs/${module.name}/static")
 
-        File("html-docs/${module.name}").walk().forEach {
+        File("$root/html-docs/${module.name}").walk().forEach {
             if (it.isFile && it.name.endsWith(".html")) {
                 beautifyHtml(module.name, it)
             }
@@ -213,7 +221,7 @@ internal fun beautify(project: Project, modules: Collection<Project>) {
         """
     }
 
-    val indexFile = File("html-docs/index.html")
+    val indexFile = File("$root/html-docs/index.html")
     indexFile.writeText("""
     <html>
         <head>
