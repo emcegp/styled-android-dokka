@@ -22,7 +22,7 @@ class StyledDokka : Plugin<Project> {
                 group = JavaBasePlugin.DOCUMENTATION_GROUP
 
                 val modules = project.subprojects.filter(requirePlugins(
-                    "com.android.library", "kotlin-android"
+                    "com.android.library", "org.jetbrains.dokka-android", "kotlin-android"
                 ))
 
                 modules.forEach {
