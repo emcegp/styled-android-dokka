@@ -14,7 +14,7 @@ plugin for API documentation.
 
         [256x456](static/open_close.gif)
 
-   , where text part is a set of **widthXheight** pixel dimensions and url is image url.
+   ,where text part is a set of **widthXheight** pixel dimensions and url is the image's src.
 
 1. Generates index page for the whole project with a set of high level descriptions and installation
    instructions obtained from module level build.gradle.
