@@ -12,7 +12,7 @@ plugin for API documentation.
    of the respective module.
 1. Supports image inclusion in the documentation via a special format of **a** tags:
 
-    [256x456](static/open_close.gif)
+        [256x456](static/open_close.gif)
 
    , where text part is a set of **widthXheight** pixel dimensions and url is image url.
 
