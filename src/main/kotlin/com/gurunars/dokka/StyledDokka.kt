@@ -26,12 +26,10 @@ class StyledDokka : Plugin<Project> {
                 ))
 
                 modules.forEach {
-                    it.tasks.replace("dokka", DokkaAndroidTask::class.java).apply {
-                        moduleName=it.name
-                        sourceDirs = it.files("src/main/kotlin")
+                    val task = it.tasks.getByName("dokka") as DokkaAndroidTask
+                    task.apply {
                         outputFormat = "html"
                         outputDirectory = "html-docs"
-                        includes = listOf("README.md")
                     }
                 }
 
