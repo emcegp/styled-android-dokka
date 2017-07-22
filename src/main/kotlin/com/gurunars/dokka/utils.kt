@@ -151,9 +151,11 @@ private fun replaceImageLinksWithImgs(doc: Document) {
 }
 
 
-private fun beautifyHtml(moduleName: String, file: File) {
+private fun beautifyHtml(rootPath: String, moduleName: String, file: File) {
     val doc = Jsoup.parse(
-            file.readText().replace("&nbsp;/&nbsp;", ""),
+            file.readText()
+                .replace("&nbsp;/&nbsp;", "")
+                .replace("file:$rootPath/html-docs/", "/"),
             "UTF-8"
     )
 
@@ -199,7 +201,7 @@ internal fun beautify(project: Project, modules: Collection<Project>) {
 
         File("$root/html-docs/${module.name}").walk().forEach {
             if (it.isFile && it.name.endsWith(".html")) {
-                beautifyHtml(module.name, it)
+                beautifyHtml(root, module.name, it)
             }
         }
 
