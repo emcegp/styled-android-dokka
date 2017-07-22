@@ -184,11 +184,13 @@ private fun InputStream.readTextAndClose(charset: Charset = Charsets.UTF_8): Str
 internal fun beautify(project: Project, modules: Collection<Project>) {
     val root = project.projectDir.absolutePath
 
-    val styles = File("$root/html-docs/style.css")
-    styles.deleteRecursively()
-    styles.writeText(
-        ParamParseStateMachine::class.java.getResourceAsStream("/style.css").readTextAndClose()
-    )
+    with(File("$root/html-docs/style.css")) {
+        delete()
+        createNewFile()
+        writeText(
+                ParamParseStateMachine::class.java.getResourceAsStream("/style.css").readTextAndClose()
+        )
+    }
 
     modules.forEach {
         val module = it

@@ -29,7 +29,7 @@ class StyledDokka : Plugin<Project> {
                     val task = it.tasks.getByName("dokka") as DokkaAndroidTask
                     task.apply {
                         outputFormat = "html"
-                        outputDirectory = "html-docs"
+                        outputDirectory = "${project.projectDir.absolutePath}/html-docs"
                     }
                 }
 
