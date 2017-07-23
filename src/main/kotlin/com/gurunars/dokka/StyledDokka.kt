@@ -31,7 +31,7 @@ class StyledDokka : Plugin<Project> {
 
                 modules.forEach {
                     val task = it.tasks.getByName("dokka") as DokkaAndroidTask
-                    val taskDeps = mutableSetOf<String>().apply {
+                    val moduleDepFullNames = mutableSetOf<String>().apply {
                         it.configurations.map {
                             it.allDependencies.map {
                                 val name = "${it.group}:${it.name}:${it.version}"
@@ -40,18 +40,22 @@ class StyledDokka : Plugin<Project> {
                                 }
                             }
                         }
-                    }.map { nameToModuleMap[it]!!.getTasksByName("dokka", true) }.flatten()
+                    }
 
                     task.apply {
-                        setMustRunAfter(taskDeps)
+                        setMustRunAfter(moduleDepFullNames.map {
+                            nameToModuleMap[it]!!.getTasksByName("dokka", true)
+                        }.flatten())
                         moduleName=it.name
                         outputFormat = "html"
                         outputDirectory = "${project.projectDir.absolutePath}/html-docs"
-                        externalDocumentationLinks.addAll(modules.map {
-                            DokkaConfiguration.ExternalDocumentationLink.Builder(
-                                "file://${project.projectDir.absolutePath}/html-docs/${it.name}/"
-                            ).build()
-                        })
+                        externalDocumentationLinks.addAll(
+                            moduleDepFullNames.map { nameToModuleMap[it]!!.name }.map {
+                                DokkaConfiguration.ExternalDocumentationLink.Builder(
+                                    "file://${project.projectDir.absolutePath}/html-docs/${it}/"
+                                ).build()
+                            }
+                        )
                     }
                 }
 
