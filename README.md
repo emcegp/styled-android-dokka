@@ -18,6 +18,7 @@ plugin for API documentation.
 
 1. Generates index page for the whole project with a set of high level descriptions and installation
    instructions obtained from module level build.gradle.
+1. Supports cross module references without merging documentation into a single instance
 
 ## Install
 
