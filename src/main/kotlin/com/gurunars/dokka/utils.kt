@@ -209,14 +209,14 @@ internal fun beautify(project: Project, modules: Collection<Project>) {
 
     val projectDivs = modules.map {
         val installLine = """
-            implementation ('${it.group}:${it.name}:${it.version}@aar') {
+            implementation ('${it.group}:${it.name}:${project.version}@aar') {
                 transitive = true
             }
         """.trimIndent()
 
         """
         <div class="section">
-            <h3><a href="${it.name}">${it.name} (${it.version})</a></h3>
+            <h3><a href="${it.name}">${it.name} (${project.version})</a></h3>
             ${
                 if (it.description != null)
                     "<p>${it.description}</p>"
