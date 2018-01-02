@@ -208,22 +208,43 @@ internal fun beautify(project: Project, modules: Collection<Project>) {
     }
 
     val projectDivs = modules.map {
-        var description = ""
-        if (it.description != null) {
-            description = "<p>${it.description}</p>"
-        }
+        val installLine = """
+            implementation ('${it.group}:${it.name}:${it.version}@aar') {
+                transitive = true
+            }
+        """.trimIndent()
+
         """
         <div class="section">
             <h3><a href="${it.name}">${it.name} (${it.version})</a></h3>
-            $description
-            <code class="install-line">
-            compile ('${it.group}.${it.name}:${it.version}@aar') {
-                transitive = true
+            ${
+                if (it.description != null)
+                    "<p>${it.description}</p>"
+                else
+                    ""
             }
-            </code>
+            <pre class="install-line">$installLine</pre>
         </div>
         """
     }
+
+    val extras = project.extensions.extraProperties
+
+    val mavenRepo =
+        if (extras.has("mavenRepoUrl"))
+            extras.get("mavenRepoUrl")
+        else
+            "<TBD>"
+
+    val installLine = """
+    allprojects {
+        repositories {
+            ...
+            maven { url $mavenRepo }
+            ...
+        }
+    }
+    """.trimIndent()
 
     val indexFile = File("$root/html-docs/index.html")
     indexFile.writeText("""
@@ -237,6 +258,20 @@ internal fun beautify(project: Project, modules: Collection<Project>) {
             <div class="breadcrumbs">
                 / <a href="/">index</a>
             </div>
+
+            <div class="section">
+                <p>
+                ${project.description}
+                </p>
+
+                <p>
+                In order to fetch the modules as dependencies add the following to your
+                top level <b>build.gradle</b>:
+                </p>
+
+                <pre class="install-line">${installLine}</pre>
+            </div>
+
             ${projectDivs.joinToString("\n")}
         </body>
     </html>

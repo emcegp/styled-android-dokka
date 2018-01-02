@@ -42,7 +42,7 @@ body, table {
     margin-bottom: 20px;
 }
 
-.section > code, .section > p {
+.section > code, .section > p, .section > pre {
     margin-left: 10px;
 }
 
@@ -53,7 +53,7 @@ body, table {
     margin-bottom: 10px;
 }
 
-.section > code {
+.section > code, .section > pre {
     border: 1px dotted Black;
 }
 

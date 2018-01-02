@@ -25,6 +25,12 @@ plugin for API documentation.
 Assuming that you have managed to generate plain HTML documentation in accordance with
 [Dokka's README](https://github.com/Kotlin/dokka) modify your project level build.gradle this way:
 
+    buildscript {
+        ...
+        ext.mavenRepoUrl = 'https://path/to/your/maven/repo'
+        ...
+    }
+
     repositories {
         ...
         maven {url 'https://jitpack.io' }
