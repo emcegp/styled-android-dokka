@@ -216,7 +216,7 @@ internal fun beautify(project: Project, modules: Collection<Project>) {
 
         """
         <div class="section">
-            <h3><a href="${it.name}">${it.name} (${project.version})</a></h3>
+            <h3><a href="${it.name}">${it.name}</a></h3>
             ${
                 if (it.description != null)
                     "<p>${it.description}</p>"
