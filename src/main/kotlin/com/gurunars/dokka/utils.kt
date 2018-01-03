@@ -240,7 +240,7 @@ internal fun beautify(project: Project, modules: Collection<Project>) {
     allprojects {
         repositories {
             ...
-            maven { url $mavenRepo }
+            maven { url "$mavenRepo" }
             ...
         }
     }
